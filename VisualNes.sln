@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core", "Core\Core.vcxproj", "{484A59BB-63D7-4F4A-925C-9F82B106D575}"
 EndProject
@@ -16,6 +16,8 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		GUI Release|x64 = GUI Release|x64
+		GUI Release|x86 = GUI Release|x86
 		PGO Instrument|x64 = PGO Instrument|x64
 		PGO Instrument|x86 = PGO Instrument|x86
 		PGO Optimize|x64 = PGO Optimize|x64
@@ -28,6 +30,10 @@ Global
 		{484A59BB-63D7-4F4A-925C-9F82B106D575}.Debug|x64.Build.0 = Debug|x64
 		{484A59BB-63D7-4F4A-925C-9F82B106D575}.Debug|x86.ActiveCfg = Debug|Win32
 		{484A59BB-63D7-4F4A-925C-9F82B106D575}.Debug|x86.Build.0 = Debug|Win32
+		{484A59BB-63D7-4F4A-925C-9F82B106D575}.GUI Release|x64.ActiveCfg = GUI Release|x64
+		{484A59BB-63D7-4F4A-925C-9F82B106D575}.GUI Release|x64.Build.0 = GUI Release|x64
+		{484A59BB-63D7-4F4A-925C-9F82B106D575}.GUI Release|x86.ActiveCfg = GUI Release|Win32
+		{484A59BB-63D7-4F4A-925C-9F82B106D575}.GUI Release|x86.Build.0 = GUI Release|Win32
 		{484A59BB-63D7-4F4A-925C-9F82B106D575}.PGO Instrument|x64.ActiveCfg = PGO Instrument|x64
 		{484A59BB-63D7-4F4A-925C-9F82B106D575}.PGO Instrument|x64.Build.0 = PGO Instrument|x64
 		{484A59BB-63D7-4F4A-925C-9F82B106D575}.PGO Instrument|x86.ActiveCfg = PGO Instrument|Win32
@@ -44,6 +50,10 @@ Global
 		{5B857FF5-4BA0-49E8-B761-FE89B5C37103}.Debug|x64.Build.0 = Debug|x64
 		{5B857FF5-4BA0-49E8-B761-FE89B5C37103}.Debug|x86.ActiveCfg = Debug|x86
 		{5B857FF5-4BA0-49E8-B761-FE89B5C37103}.Debug|x86.Build.0 = Debug|x86
+		{5B857FF5-4BA0-49E8-B761-FE89B5C37103}.GUI Release|x64.ActiveCfg = GUI Release|x64
+		{5B857FF5-4BA0-49E8-B761-FE89B5C37103}.GUI Release|x64.Build.0 = GUI Release|x64
+		{5B857FF5-4BA0-49E8-B761-FE89B5C37103}.GUI Release|x86.ActiveCfg = GUI Release|x86
+		{5B857FF5-4BA0-49E8-B761-FE89B5C37103}.GUI Release|x86.Build.0 = GUI Release|x86
 		{5B857FF5-4BA0-49E8-B761-FE89B5C37103}.PGO Instrument|x64.ActiveCfg = PGO Instrument|x64
 		{5B857FF5-4BA0-49E8-B761-FE89B5C37103}.PGO Instrument|x64.Build.0 = PGO Instrument|x64
 		{5B857FF5-4BA0-49E8-B761-FE89B5C37103}.PGO Instrument|x86.ActiveCfg = PGO Instrument|x86
@@ -59,5 +69,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E53EE19E-D500-44D6-904B-173D89807F9C}
 	EndGlobalSection
 EndGlobal

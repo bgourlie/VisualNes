@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include <iostream>
+#include <fstream>
 #include <deque>
 #include <cstring>
 #include <algorithm>
@@ -8,6 +10,7 @@
 #include "chipsim.h"
 #include "ramedit.h"
 #include "logger.h"
+#include <assert.h>
 
 vector<string> logVars;
 std::deque<int32_t> recentLog;
@@ -248,4 +251,121 @@ DllExport void step(uint32_t halfCycleCount)
 		}
 	}
 	flushLog(logVars, logBuffer);
+}
+
+void loadRom() {
+	std::streampos size;
+	char * memblock;
+
+	ifstream file("C:\\Users\\bgour\\Downloads\\scanline.nes", ios::in | ios::binary | ios::ate);
+	if (file.is_open())
+	{
+		size = file.tellg();
+		memblock = new char[size];
+		file.seekg(0, ios::beg);
+		file.read(memblock, size);
+		file.close();
+
+		std::cout << "Loaded Rom" << std::endl;
+		
+		std::cout << "Mirroring Type: ";
+		MirroringType mirroringType;
+
+		if ((memblock[6] & 0x08) == 0x08) {
+			std::cout << "Four Screens" << std::endl;
+			mirroringType = MirroringType::FourScreens;
+		}
+		else if ((memblock[6] & 0x01) == 0x01) {
+			std::cout << "Vertical" << std::endl;
+			mirroringType = MirroringType::Vertical;
+		}
+		else {
+			std::cout << "Horizontal" << std::endl;
+			mirroringType = MirroringType::Horizontal;
+		}
+		assert(memblock[4] == 1 || memblock[4] == 2);
+		int prgRamSize = memblock[4] * 0x4000;
+		int chrRamSize = memblock[5] * 0x2000;
+
+		std::cout << "PRG SIZE: " << prgRamSize << std::endl;
+		std::cout << "CHR SIZE: " << chrRamSize << std::endl;
+
+		char * prgRam = new char[0x8000];
+		char * chrRam = new char[chrRamSize];
+
+		std::copy(&memblock[16], &memblock[prgRamSize], prgRam);
+		std::copy(&memblock[16 + prgRamSize], &memblock[16 + prgRamSize + chrRamSize], chrRam);
+
+		if (prgRamSize == 0x4000) {
+			std::copy(&memblock[16], &memblock[prgRamSize], &prgRam[0x4000]);
+		}
+		delete[] memblock;
+		setMemoryState(MemoryType::ChrRam, (uint8_t *)chrRam, chrRamSize);
+		setMemoryState(MemoryType::PrgRam, (uint8_t *)prgRam, 0x8000);
+	} else {
+		std::cout << "Unable to open file" << std::endl;
+	}
+}
+
+int main () { 
+	std::cout << "Initializing..." << std::endl;
+	initEmulator();
+	reset("", false);
+	std::cout << "Loading ROM..." << std::endl;
+	loadRom();
+
+	std::ofstream file;
+	file.open("C:\\Users\\bgour\\Desktop\\run.dat", std::ios_base::binary);
+	file.write((char*)prgRam, sizeof(prgRam));
+	file.write((char*)chrRam, sizeof(chrRam));
+	std::cout << "Running for 1000 half cycles..." << std::endl;
+	int numSteps = 10;
+	int halfCyclesPerStep = 1;
+	for (int i = 0; i < numSteps; i++) {
+		step(halfCyclesPerStep);
+		file.write(reinterpret_cast<const char *>(&i), sizeof(i));
+		file.write((char*)prgRam, sizeof(prgRam));
+		file.write((char*)chrRam, sizeof(chrRam));
+		uint8_t data = 0;
+		int nodenum = 0;
+		for (node& node : nodes) {
+			int startbit = (nodenum % 2) * 4;
+			data = node.floating << startbit;
+			data |= node.pulldown << (startbit + 1);
+			data |= node.pullup << (startbit + 2);
+			data |= node.state << (startbit + 3);
+			nodenum++;
+			if (nodenum % 2 == 0) {
+				file.write(reinterpret_cast<const char *>(&data), sizeof(data));
+				data = 0;
+			}
+		}
+
+		if (nodenum % 2 != 0) {
+			file.write(reinterpret_cast<const char *>(&data), sizeof(data));
+		}
+
+		data = 0;
+		int transnum = 0;
+		for (transistor& t : transistors) {
+			data |= t.on << (transnum % 8);
+			transnum++;
+
+			if (transnum % 8 == 0) {
+				file.write(reinterpret_cast<const char *>(&data), sizeof(data));
+				data = 0;
+			}
+		}
+
+		if (transnum % 8 != 0) {
+			file.write(reinterpret_cast<const char *>(&data), sizeof(data));
+		}
+
+		std::cout << "Executed " << (i + 1) * halfCyclesPerStep << " half cycles..." << std::endl;
+	}
+	
+	file.close();
+	std::cout << "Done!";
+	std::cin.get();
+	return 0;
 }
