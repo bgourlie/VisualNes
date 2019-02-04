@@ -307,60 +307,79 @@ void loadRom() {
 	}
 }
 
+void writeNodeState(std::ofstream &file) {
+	int bytesWritten = 0;
+	uint8_t data = 0;
+	int nodenum = 0;
+	for (node& node : nodes) {
+		int startbit = (nodenum % 2) * 4;
+		data = node.floating << startbit;
+		data |= node.pulldown << (startbit + 1);
+		data |= node.pullup << (startbit + 2);
+		data |= node.state << (startbit + 3);
+		nodenum++;
+		if (nodenum % 2 == 0) {
+			file.write(reinterpret_cast<const char *>(&data), sizeof(data));
+			bytesWritten++;
+			data = 0;
+		}
+	}
+
+	if (nodenum % 2 != 0) {
+		file.write(reinterpret_cast<const char *>(&data), sizeof(data));
+		bytesWritten++;
+	}
+
+	std::cout << "Node Bytes Written: " << bytesWritten << std::endl;
+}
+
+void writeTransistorState(std::ofstream &file) {
+	uint8_t data = 0;
+	int transnum = 0;
+	for (transistor& t : transistors) {
+		data |= t.on << (transnum % 8);
+		transnum++;
+
+		if (transnum % 8 == 0) {
+			file.write(reinterpret_cast<const char *>(&data), sizeof(data));
+			data = 0;
+		}
+	}
+
+	if (transnum % 8 != 0) {
+		file.write(reinterpret_cast<const char *>(&data), sizeof(data));
+	}
+}
+
+void writeRamState(std::ofstream &file) {
+	file.write((char*)prgRam, sizeof(prgRam));
+	file.write((char*)chrRam, sizeof(chrRam));
+}
+
 int main () { 
 	std::cout << "Initializing..." << std::endl;
 	initEmulator();
+	std::cout << "floating: " << nodes[0].floating << std::endl;
 	reset("", false);
+	std::cout << "floating: " << nodes[0].floating << std::endl;
 	std::cout << "Loading ROM..." << std::endl;
 	loadRom();
-
-	std::ofstream file;
-	file.open("C:\\Users\\bgour\\Desktop\\run.dat", std::ios_base::binary);
-	file.write((char*)prgRam, sizeof(prgRam));
-	file.write((char*)chrRam, sizeof(chrRam));
-	std::cout << "Running for 1000 half cycles..." << std::endl;
+	std::cout << "floating: " << nodes[0].floating << std::endl;
 	int numSteps = 10;
 	int halfCyclesPerStep = 1;
+	std::ofstream file;
+	file.open("C:\\Users\\bgour\\Desktop\\run.dat", std::ios_base::binary);
+	file.write(reinterpret_cast<const char *>(&numSteps), sizeof(numSteps));
+	file.write(reinterpret_cast<const char *>(&halfCyclesPerStep), sizeof(halfCyclesPerStep));
+	writeRamState(file);
+	writeNodeState(file);
+	writeTransistorState(file);
+	std::cout << "Running for 1000 half cycles..." << std::endl;
 	for (int i = 0; i < numSteps; i++) {
 		step(halfCyclesPerStep);
-		file.write(reinterpret_cast<const char *>(&i), sizeof(i));
-		file.write((char*)prgRam, sizeof(prgRam));
-		file.write((char*)chrRam, sizeof(chrRam));
-		uint8_t data = 0;
-		int nodenum = 0;
-		for (node& node : nodes) {
-			int startbit = (nodenum % 2) * 4;
-			data = node.floating << startbit;
-			data |= node.pulldown << (startbit + 1);
-			data |= node.pullup << (startbit + 2);
-			data |= node.state << (startbit + 3);
-			nodenum++;
-			if (nodenum % 2 == 0) {
-				file.write(reinterpret_cast<const char *>(&data), sizeof(data));
-				data = 0;
-			}
-		}
-
-		if (nodenum % 2 != 0) {
-			file.write(reinterpret_cast<const char *>(&data), sizeof(data));
-		}
-
-		data = 0;
-		int transnum = 0;
-		for (transistor& t : transistors) {
-			data |= t.on << (transnum % 8);
-			transnum++;
-
-			if (transnum % 8 == 0) {
-				file.write(reinterpret_cast<const char *>(&data), sizeof(data));
-				data = 0;
-			}
-		}
-
-		if (transnum % 8 != 0) {
-			file.write(reinterpret_cast<const char *>(&data), sizeof(data));
-		}
-
+		writeRamState(file);
+		writeNodeState(file);
+		writeTransistorState(file);
 		std::cout << "Executed " << (i + 1) * halfCyclesPerStep << " half cycles..." << std::endl;
 	}
 	
