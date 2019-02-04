@@ -313,7 +313,7 @@ void writeNodeState(std::ofstream &file) {
 	int nodenum = 0;
 	for (node& node : nodes) {
 		int startbit = (nodenum % 2) * 4;
-		data = node.floating << startbit;
+		data |= node.floating << startbit;
 		data |= node.pulldown << (startbit + 1);
 		data |= node.pullup << (startbit + 2);
 		data |= node.state << (startbit + 3);
@@ -329,8 +329,6 @@ void writeNodeState(std::ofstream &file) {
 		file.write(reinterpret_cast<const char *>(&data), sizeof(data));
 		bytesWritten++;
 	}
-
-	std::cout << "Node Bytes Written: " << bytesWritten << std::endl;
 }
 
 void writeTransistorState(std::ofstream &file) {
@@ -359,12 +357,9 @@ void writeRamState(std::ofstream &file) {
 int main () { 
 	std::cout << "Initializing..." << std::endl;
 	initEmulator();
-	std::cout << "floating: " << nodes[0].floating << std::endl;
 	reset("", false);
-	std::cout << "floating: " << nodes[0].floating << std::endl;
 	std::cout << "Loading ROM..." << std::endl;
 	loadRom();
-	std::cout << "floating: " << nodes[0].floating << std::endl;
 	int numSteps = 10;
 	int halfCyclesPerStep = 1;
 	std::ofstream file;
