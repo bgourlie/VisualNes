@@ -358,6 +358,7 @@ int main () {
 	std::cout << "Initializing..." << std::endl;
 	initEmulator();
 	reset("", false);
+	std::cout << "Exec count: " << execCount << std::endl;
 	std::cout << "Loading ROM..." << std::endl;
 	loadRom();
 	int numSteps = 10;
@@ -369,14 +370,14 @@ int main () {
 	writeRamState(file);
 	writeNodeState(file);
 	writeTransistorState(file);
-	std::cout << "Running for 1000 half cycles..." << std::endl;
-	for (int i = 0; i < numSteps; i++) {
-		step(halfCyclesPerStep);
-		writeRamState(file);
-		writeNodeState(file);
-		writeTransistorState(file);
-		std::cout << "Executed " << (i + 1) * halfCyclesPerStep << " half cycles..." << std::endl;
-	}
+	//std::cout << "Running for 1000 half cycles..." << std::endl;
+	//for (int i = 0; i < numSteps; i++) {
+	//	step(halfCyclesPerStep);
+	//	writeRamState(file);
+	//	writeNodeState(file);
+	//	writeTransistorState(file);
+	//	std::cout << "Executed " << (i + 1) * halfCyclesPerStep << " half cycles..." << std::endl;
+	//}
 	
 	file.close();
 	std::cout << "Done!";

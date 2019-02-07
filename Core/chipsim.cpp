@@ -37,6 +37,7 @@ bool groupEmpty = true;
 bool hasGnd = false;
 bool hasPwr = false;
 
+int execCount = 0;
 void recalcNodeList(shared_ptr<vector<uint16_t>> list) {
 	if(processedNodes.empty()) {
 		processedNodes.insert(processedNodes.end(), nodes.size(), 0);
@@ -48,13 +49,23 @@ void recalcNodeList(shared_ptr<vector<uint16_t>> list) {
 	recalclist = recalclists[0];
 
 	for(int j = 0; j<100; j++) {		// loop limiter
+		execCount++;
 		if(j == 99) {
 			throw std::runtime_error("Maximum loop exceeded");
 		}
 
+		if (execCount == 119) {
 		for(int nodeNumber : *list) {
+			//std::cout << nodeNumber << ",";
+			std::cout << nodeNumber << std::endl;
+		}
+		}
+
+		for(int nodeNumber : *list) {
+			//std::cout << nodeNumber << ",";
 			recalcNode(nodeNumber);
 		}
+		//std::cout << std::endl;
 
 		if(groupEmpty) return;
 
