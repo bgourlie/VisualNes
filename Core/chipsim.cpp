@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include "chipsim.h"
 #include "wires.h"
 #include "datadefs.h"
+#include <assert.h>
 
 vector<uint16_t> processedNodes;
 shared_ptr<vector<uint16_t>> recalclists[2];
@@ -54,18 +55,9 @@ void recalcNodeList(shared_ptr<vector<uint16_t>> list) {
 			throw std::runtime_error("Maximum loop exceeded");
 		}
 
-		if (execCount == 119) {
 		for(int nodeNumber : *list) {
-			//std::cout << nodeNumber << ",";
-			std::cout << nodeNumber << std::endl;
-		}
-		}
-
-		for(int nodeNumber : *list) {
-			//std::cout << nodeNumber << ",";
 			recalcNode(nodeNumber);
 		}
-		//std::cout << std::endl;
 
 		if(groupEmpty) return;
 
