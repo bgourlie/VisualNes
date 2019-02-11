@@ -41,11 +41,7 @@ bool hasPwr = false;
 int recalcNodeListCount = 0;
 int j = 0;
 int line = 0;
-//std::ofstream tracefile;
 void recalcNodeList(shared_ptr<vector<uint16_t>> list) {
-	//if (!tracefile.is_open()) {
-	//	tracefile.open("C:\\Users\\bgour\\Desktop\\trace.txt");
-	//}
 	recalcNodeListCount++;
 	if(processedNodes.empty()) {
 		processedNodes.insert(processedNodes.end(), nodes.size(), 0);
@@ -65,16 +61,6 @@ void recalcNodeList(shared_ptr<vector<uint16_t>> list) {
 		for(int nodeNumber : *list) {
 			line++;
 			recalcNode(nodeNumber);
-
-			//tracefile << "nn=" << nodeNumber << " c=" << recalcNodeListCount << " j=" << j << " l=" << line << ":";
-
-			//for (int i = 0; i < group.size(); i++) {
-			//	if (i > 0) {
-			//		tracefile << ",";
-			//	}
-			//	tracefile << group[i];
-			//}
-			//tracefile << std::endl;
 		}
 
 		if (groupEmpty) {
@@ -105,15 +91,9 @@ void recalcNode(uint16_t nodeNumber) {
 			n.state = newState;
 			for(uint16_t i : n.gates) {
 				if (n.state) {
-					if (i == 17236) {
-						std::cout << "turning trans 17236 on (c: " << recalcNodeListCount << " j:" << j << " nn:" << nn << " l:" << line << ")" << std::endl;
-					}
 					turnTransistorOn(i);
 				}
 				else {
-					if (i == 17236) {
-						std::cout << "turning trans 17236 off (c: " << recalcNodeListCount << " j:" << j << " nn:" << nn << " l:" << line << ")" << std::endl;
-					}
 					turnTransistorOff(i);
 				}
 			}
@@ -177,10 +157,6 @@ void addNodeToGroup(uint16_t nn, uint64_t recurseCount) {
 		auto t_index = nodeC1c2s[nn][i];
 		transistor &t = transistors[nodeC1c2s[nn][i]];
 
-		if (recalcNodeListCount == 20 && j == 0 && nn == 23146 && line == 10536) {
-			//std::cout << "Nessim state is wrong here, transistor is on when should be off" << std::endl;
-		}
-
 		if(t.on) {
 			addNodeToGroup(t.c1 == nn ? t.c2 : t.c1, recurseCount + 1);
 		}
@@ -203,8 +179,8 @@ bool getNodeValue() {
 		return true;
 	}
 
-	int hi_area = 0;
-	int lo_area = 0;
+	int64_t hi_area = 0;
+	int64_t lo_area = 0;
 	for(uint16_t nn : group) {
 		node &n = nodes[nn];
 		if(n.pullup) return true;

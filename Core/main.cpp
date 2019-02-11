@@ -366,7 +366,7 @@ int main () {
 	//file2.close();
 	//return 0;
 	std::ofstream file;
-	file.open("C:\\Users\\bgour\\Desktop\\run2.dat", std::ios_base::binary);
+	file.open("C:\\Users\\bgour\\Desktop\\run.dat", std::ios_base::binary);
 	std::cout << "Initializing..." << std::endl;
 	writeNodeState(file);
 	writeTransistorState(file);
@@ -382,14 +382,14 @@ int main () {
 	writeRamState(file);
 	writeNodeState(file);
 	writeTransistorState(file);
-	//std::cout << "Running for 1000 half cycles..." << std::endl;
-	//for (int i = 0; i < numSteps; i++) {
-	//	step(halfCyclesPerStep);
-	//	writeRamState(file);
-	//	writeNodeState(file);
-	//	writeTransistorState(file);
-	//	std::cout << "Executed " << (i + 1) * halfCyclesPerStep << " half cycles..." << std::endl;
-	//}
+	std::cout << "Running for 1000 half cycles..." << std::endl;
+	for (int i = 0; i < numSteps; i++) {
+		step(halfCyclesPerStep);
+		//writeRamState(file);
+		writeNodeState(file);
+		writeTransistorState(file);
+		std::cout << "Executed " << (i + 1) * halfCyclesPerStep << " half cycles..." << std::endl;
+	}
 	
 	file.close();
 	std::cout << "Done!";
