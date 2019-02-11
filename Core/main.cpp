@@ -347,7 +347,6 @@ void writeTransistorState(std::ofstream &file) {
 	if (transnum % 8 != 0) {
 		file.write(reinterpret_cast<const char *>(&data), sizeof(data));
 	}
-	std::cout << transnum << std::endl;
 }
 
 void writeRamState(std::ofstream &file) {
@@ -359,9 +358,15 @@ int main () {
 	int numSteps = 10;
 	int halfCyclesPerStep = 1;
 	initEmulator();
-
+	//std::ofstream file2;
+	//file2.open("C:\\Users\\bgour\\Desktop\\nodes_ref.txt");
+	//for (node& t : nodes) {
+	//	file2 << t.num << " " << t.area << std::endl;
+	//}
+	//file2.close();
+	//return 0;
 	std::ofstream file;
-	file.open("C:\\Users\\bgour\\Desktop\\run.dat", std::ios_base::binary);
+	file.open("C:\\Users\\bgour\\Desktop\\run2.dat", std::ios_base::binary);
 	std::cout << "Initializing..." << std::endl;
 	writeNodeState(file);
 	writeTransistorState(file);
@@ -369,7 +374,7 @@ int main () {
 	reset("", false);
 	writeNodeState(file);
 	writeTransistorState(file);
-	std::cout << "Exec count: " << execCount << std::endl;
+	std::cout << "Exec count: " << recalcNodeListCount << std::endl;
 	std::cout << "Loading ROM..." << std::endl;
 	loadRom();
 	file.write(reinterpret_cast<const char *>(&numSteps), sizeof(numSteps));

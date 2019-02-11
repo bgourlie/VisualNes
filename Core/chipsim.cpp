@@ -38,8 +38,15 @@ bool groupEmpty = true;
 bool hasGnd = false;
 bool hasPwr = false;
 
-int execCount = 0;
+int recalcNodeListCount = 0;
+int j = 0;
+int line = 0;
+//std::ofstream tracefile;
 void recalcNodeList(shared_ptr<vector<uint16_t>> list) {
+	//if (!tracefile.is_open()) {
+	//	tracefile.open("C:\\Users\\bgour\\Desktop\\trace.txt");
+	//}
+	recalcNodeListCount++;
 	if(processedNodes.empty()) {
 		processedNodes.insert(processedNodes.end(), nodes.size(), 0);
 		recalclists[0].reset(new vector<uint16_t>(100));
@@ -49,18 +56,31 @@ void recalcNodeList(shared_ptr<vector<uint16_t>> list) {
 	}
 	recalclist = recalclists[0];
 
-	for(int j = 0; j<100; j++) {		// loop limiter
-		execCount++;
+	for(j = 0; j<100; j++) {		// loop limiter
 		if(j == 99) {
 			throw std::runtime_error("Maximum loop exceeded");
 		}
 
+		line = 0;
 		for(int nodeNumber : *list) {
+			line++;
 			recalcNode(nodeNumber);
+
+			//tracefile << "nn=" << nodeNumber << " c=" << recalcNodeListCount << " j=" << j << " l=" << line << ":";
+
+			//for (int i = 0; i < group.size(); i++) {
+			//	if (i > 0) {
+			//		tracefile << ",";
+			//	}
+			//	tracefile << group[i];
+			//}
+			//tracefile << std::endl;
 		}
 
-		if(groupEmpty) return;
-
+		if (groupEmpty) {
+			return;
+		}
+			
 		for(int nodeNumber : *recalclist) {
 			processedNodes[nodeNumber] = 0;
 		}
@@ -84,8 +104,18 @@ void recalcNode(uint16_t nodeNumber) {
 		if(n.state != newState) {
 			n.state = newState;
 			for(uint16_t i : n.gates) {
-				if(n.state) turnTransistorOn(i);
-				else turnTransistorOff(i);
+				if (n.state) {
+					if (i == 17236) {
+						std::cout << "turning trans 17236 on (c: " << recalcNodeListCount << " j:" << j << " nn:" << nn << " l:" << line << ")" << std::endl;
+					}
+					turnTransistorOn(i);
+				}
+				else {
+					if (i == 17236) {
+						std::cout << "turning trans 17236 off (c: " << recalcNodeListCount << " j:" << j << " nn:" << nn << " l:" << line << ")" << std::endl;
+					}
+					turnTransistorOff(i);
+				}
 			}
 		}
 	}
@@ -110,6 +140,10 @@ void addRecalcNode(uint16_t nn) {
 	if(nn == ngnd) return;
 	if(nn == npwr) return;
 
+	if (recalcNodeListCount == 20 && j == 0 && nn == 4546) {
+		//std::cout << "ahhh";
+	}
+
 	if(!processedNodes[nn]) {
 		recalclist->push_back(nn);
 		processedNodes[nn] = 1;
@@ -122,10 +156,10 @@ void getNodeGroup(uint16_t nn) {
 	hasGnd = false;
 	hasPwr = false;
 	group.clear();
-	addNodeToGroup(nn);
+	addNodeToGroup(nn, 0);
 }
 
-void addNodeToGroup(uint16_t nn) {
+void addNodeToGroup(uint16_t nn, uint64_t recurseCount) {
 	if(nn == ngnd) {
 		hasGnd = true;
 		return;
@@ -134,13 +168,21 @@ void addNodeToGroup(uint16_t nn) {
 		hasPwr = true;
 		return;
 	}
+
+
 	if(find(group.begin(), group.end(), nn) != group.end()) return;
 	group.push_back(nn);
 
 	for(uint16_t i = 0, len = nodeCount[nn]; i < len; i++) {
+		auto t_index = nodeC1c2s[nn][i];
 		transistor &t = transistors[nodeC1c2s[nn][i]];
+
+		if (recalcNodeListCount == 20 && j == 0 && nn == 23146 && line == 10536) {
+			//std::cout << "Nessim state is wrong here, transistor is on when should be off" << std::endl;
+		}
+
 		if(t.on) {
-			addNodeToGroup(t.c1 == nn ? t.c2 : t.c1);
+			addNodeToGroup(t.c1 == nn ? t.c2 : t.c1, recurseCount + 1);
 		}
 	}
 }

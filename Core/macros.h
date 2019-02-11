@@ -6,7 +6,7 @@ extern uint8_t nametableRam[4][0x400];
 extern uint8_t cpuRam[0x800];
 extern uint8_t prgRam[0x8000];
 extern int cycle;
-extern int execCount;
+extern int recalcNodeListCount;
 
 enum class MirroringType
 {

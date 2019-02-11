@@ -7,7 +7,7 @@ void turnTransistorOn(uint16_t tn);
 void turnTransistorOff(uint16_t tn);
 void addRecalcNode(uint16_t nn);
 void getNodeGroup(uint16_t nn);
-void addNodeToGroup(uint16_t nn);
+void addNodeToGroup(uint16_t nn, uint64_t recurseCount);
 bool getNodeValue();
 DllExport bool isNodeHigh(uint16_t nn);
 DllExport bool isTransistorOn(char* transistorName);
