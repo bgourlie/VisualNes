@@ -354,10 +354,203 @@ void writeRamState(std::ofstream &file) {
 	file.write((char*)chrRam, sizeof(chrRam));
 }
 
+bool compNodeNames(std::pair<string, uint16_t> a, std::pair<string, uint16_t> b) {
+    return a.first < b.first;
+}
+
+bool compIdTableEntries(std::pair<uint16_t, uint16_t> a, std::pair<uint16_t, uint16_t> b) {
+    return a.first < b.first;
+}
+
+bool compTransdefs(transdef a, transdef b) {
+    return a.name < b.name;
+}
+
+void generateSpriteNodesReference() {
+	std::ofstream file;
+	file.open("sprite_nodes_reference.txt");
+	for (int i = 0; i < sprite_nodes.size(); i++) {
+		if (i != 0) {
+			file << std::endl;
+		}
+		for (int j = 0; j < sprite_nodes[i].size(); j++) {
+			if (j != 0) {
+				file << "|";
+			}
+			for (int k = 0; k < sprite_nodes[i][j].size(); k++) {
+				if (k != 0) {
+					file << ",";
+				}
+
+				file << sprite_nodes[i][j][k];
+			}
+		}
+	}
+	file.close();
+}
+
+void generatePaletteNodesReference() {
+	std::ofstream file;
+	file.open("palette_nodes_reference.txt");
+	for (int i = 0; i < palette_nodes.size(); i++) {
+		if (i != 0) {
+			file << std::endl;
+		}
+		for (int j = 0; j < palette_nodes[i].size(); j++) {
+			if (j != 0) {
+				file << "|";
+			}
+			for (int k = 0; k < palette_nodes[i][j].size(); k++) {
+				if (k != 0) {
+					file << ",";
+				}
+
+				file << palette_nodes[i][j][k];
+			}
+		}
+	}
+	file.close();
+}
+
+void generateIdConversionTableReference() {
+	std::ofstream file;
+	file.open("conversion_table_reference.txt");
+	std::vector<std::pair<uint16_t, uint16_t>> elems(idConvertTable.begin(), idConvertTable.end());
+	std::sort(elems.begin(), elems.end(), compIdTableEntries);
+
+	for (int i = 0; i < elems.size(); i++) {
+		if (i != 0) {
+			file << std::endl;
+		}
+		file << elems[i].first << "," << elems[i].second;
+	}
+
+	file.close();
+}
+
+void generateTransistorDefinitionReference() {
+	std::ofstream file;
+	file.open("transistor_definition_reference.txt");
+	vector<transdef> transdefsCopy = transdefs;
+	std::sort(transdefsCopy.begin(), transdefsCopy.end(), compTransdefs);
+	for (int i = 0; i < transdefsCopy.size(); i++) {
+		if (i != 0) {
+			file << std::endl;
+		}
+		file << transdefsCopy[i].name << ":" << transdefsCopy[i].c1 << "," << transdefsCopy[i].c2 << "," << transdefsCopy[i].gate;
+	}
+
+	file.close();
+}
+
+void generateTransistorsReference() {
+	std::ofstream file;
+	file.open("transistors_reference.txt");
+	for (int i = 0; i < transistors.size(); i++) {
+		if (i != 0) {
+			file << std::endl;
+		}
+		file << transistors[i].name << "," << transistors[i].c1 << "," << transistors[i].c2 << "," << transistors[i].gate << "," << transistors[i].on;
+	}
+
+	file.close();
+}
+
+void generateTransistorIndexByNameReference() {
+	std::ofstream file;
+	file.open("transistor_index_by_name_reference.txt");
+	std::vector<std::pair<string, uint16_t>> elems(transistorIndexByName.begin(), transistorIndexByName.end());
+	std::sort(elems.begin(), elems.end(), compNodeNames);
+
+	for (int i = 0; i < elems.size(); i++) {
+		if (i != 0) {
+			file << std::endl;
+		}
+		file << elems[i].first << "," << elems[i].second;
+	}
+
+	file.close();
+}
+
+void generateNodeNamesReference() {
+	std::ofstream file;
+	file.open("node_name_reference.txt");
+	std::vector<std::pair<string, uint16_t>> elems(nodenames.begin(), nodenames.end());
+	std::sort(elems.begin(), elems.end(), compNodeNames);
+
+	for (int i = 0; i < elems.size(); i++) {
+		if (i != 0) {
+			file << std::endl;
+		}
+		file << elems[i].first << "," << elems[i].second;
+	}
+
+	file.close();
+}
+
+void generateNodeCountsReference() {
+	std::ofstream file;
+	file.open("node_counts_reference.txt");
+	for (int i = 0; i < MaxNodeCount; i++) {
+		if (i != 0) {
+			file << std::endl;
+		}
+	    std::stringstream ss;
+	    ss << (int)nodeCount[i];
+		file << ss.str();
+	}
+	file.close();
+}
+
+void generateNodesC1C2Reference() {
+	std::ofstream file;
+	file.open("nodes_c1_c2_reference.txt");
+	for (int i = 0; i < MaxNodeCount; i++) {
+		if (i != 0) {
+			file << std::endl;
+		}
+		for (int j = 0; j < MaxC1C2Count; j++) {
+			if (j != 0) {
+				file << ",";
+			}
+			file << nodeC1c2s[i][j];
+		}
+	}
+	file.close();
+}
+
+void generateSegDefsReference() {
+	std::ofstream file;
+	file.open("segment_definitions_reference.txt");
+	for (int i = 0; i < segdefs.size(); i++) {
+		if (i != 0) {
+			file << std::endl;
+		}
+		for (int j = 0; j < segdefs[i].size(); j++) {
+			if (j != 0) {
+				file << ",";
+			}
+			file << segdefs[i][j];
+		}
+	}
+	file.close();
+}
+
 int main () { 
 	int numSteps = 10;
 	int halfCyclesPerStep = 1;
 	initEmulator();
+	generateNodeCountsReference();
+	generateSegDefsReference();
+	generateNodesC1C2Reference();
+	generateNodeNamesReference();
+	generateIdConversionTableReference();
+	generatePaletteNodesReference();
+	generateSpriteNodesReference();
+	generateTransistorDefinitionReference();
+	generateTransistorIndexByNameReference();
+	generateTransistorsReference();
+
 	//std::ofstream file2;
 	//file2.open("C:\\Users\\bgour\\Desktop\\nodes_ref.txt");
 	//for (node& t : nodes) {
