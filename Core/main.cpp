@@ -365,6 +365,17 @@ bool compIdTableEntries(std::pair<uint16_t, uint16_t> a, std::pair<uint16_t, uin
 bool compTransdefs(transdef a, transdef b) {
     return a.name < b.name;
 }
+void generateNodeAreaReference() {
+	std::ofstream file;
+	file.open("node_area_reference.txt");
+	for (int i = 0; i < nodes.size(); i++) {
+		if (i != 0) {
+			file << std::endl;
+		}
+		file << nodes[i].num << ":" << nodes[i].area;
+	}
+	file.close();
+}
 
 void generateSpriteNodesReference() {
 	std::ofstream file;
@@ -550,6 +561,7 @@ int main () {
 	generateTransistorDefinitionReference();
 	generateTransistorIndexByNameReference();
 	generateTransistorsReference();
+	generateNodeAreaReference();
 
 	//std::ofstream file2;
 	//file2.open("C:\\Users\\bgour\\Desktop\\nodes_ref.txt");
