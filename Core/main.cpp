@@ -571,7 +571,7 @@ int main () {
 	//file2.close();
 	//return 0;
 	std::ofstream file;
-	file.open("C:\\Users\\bgour\\Desktop\\run.dat", std::ios_base::binary);
+	file.open("C:\\Users\\bgour\\Desktop\\reference_samples.dat", std::ios_base::binary);
 	std::cout << "Initializing..." << std::endl;
 	writeNodeState(file);
 	writeTransistorState(file);
