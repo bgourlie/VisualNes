@@ -37,12 +37,7 @@ vector<uint16_t> group;
 bool groupEmpty = true;
 bool hasGnd = false;
 bool hasPwr = false;
-
-int recalcNodeListCount = 0;
-int j = 0;
-int line = 0;
 void recalcNodeList(shared_ptr<vector<uint16_t>> list) {
-	recalcNodeListCount++;
 	if(processedNodes.empty()) {
 		processedNodes.insert(processedNodes.end(), nodes.size(), 0);
 		recalclists[0].reset(new vector<uint16_t>(100));
@@ -52,14 +47,12 @@ void recalcNodeList(shared_ptr<vector<uint16_t>> list) {
 	}
 	recalclist = recalclists[0];
 
-	for(j = 0; j<100; j++) {		// loop limiter
+	for(int j = 0; j<100; j++) {		// loop limiter
 		if(j == 99) {
 			throw std::runtime_error("Maximum loop exceeded");
 		}
-
-		line = 0;
+		
 		for(int nodeNumber : *list) {
-			line++;
 			recalcNode(nodeNumber);
 		}
 
@@ -119,10 +112,6 @@ void turnTransistorOff(uint16_t i) {
 void addRecalcNode(uint16_t nn) {
 	if(nn == ngnd) return;
 	if(nn == npwr) return;
-
-	if (recalcNodeListCount == 20 && j == 0 && nn == 4546) {
-		//std::cout << "ahhh";
-	}
 
 	if(!processedNodes[nn]) {
 		recalclist->push_back(nn);

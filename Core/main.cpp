@@ -11,6 +11,7 @@
 #include "ramedit.h"
 #include "logger.h"
 #include <assert.h>
+#include <chrono>
 
 vector<string> logVars;
 std::deque<int32_t> recentLog;
@@ -550,7 +551,23 @@ void generateSegDefsReference() {
 	file.close();
 }
 
-int main () { 
+int main() {
+	initEmulator();
+	reset("", false);
+	loadRom();
+	auto begin = std::chrono::high_resolution_clock::now();
+	uint32_t iterations = 100;
+	for (int i = 0; i < iterations; i++) {
+		step(100);
+	}
+	auto end = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+	std::cout << duration << "ms total, average : " << duration / iterations << "ms." << std::endl;
+	std::cin.get();
+	return 0;
+}
+
+int main2 () { 
 	int numSteps = 10;
 	int halfCyclesPerStep = 1;
 	initEmulator();
@@ -566,13 +583,6 @@ int main () {
 	generateTransistorsReference();
 	generateNodeAreaReference();
 
-	//std::ofstream file2;
-	//file2.open("C:\\Users\\bgour\\Desktop\\nodes_ref.txt");
-	//for (node& t : nodes) {
-	//	file2 << t.num << " " << t.area << std::endl;
-	//}
-	//file2.close();
-	//return 0;
 	std::ofstream file;
 	file.open("reference_samples.dat", std::ios_base::binary);
 	std::cout << "Initializing..." << std::endl;
@@ -582,7 +592,6 @@ int main () {
 	reset("", false);
 	writeNodeState(file);
 	writeTransistorState(file);
-	std::cout << "Exec count: " << recalcNodeListCount << std::endl;
 	std::cout << "Loading ROM..." << std::endl;
 	loadRom();
 	file.write(reinterpret_cast<const char *>(&numSteps), sizeof(numSteps));
