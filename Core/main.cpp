@@ -567,9 +567,9 @@ int main() {
 	return 0;
 }
 
-int main2 () { 
+int main1 () { 
 	int numSteps = 10;
-	int halfCyclesPerStep = 1;
+	int halfCyclesPerStep = 1000;
 	initEmulator();
 	generateNodeCountsReference();
 	generateSegDefsReference();
@@ -602,7 +602,7 @@ int main2 () {
 	std::cout << "Running for 1000 half cycles..." << std::endl;
 	for (int i = 0; i < numSteps; i++) {
 		step(halfCyclesPerStep);
-		//writeRamState(file);
+		writeRamState(file);
 		writeNodeState(file);
 		writeTransistorState(file);
 		std::cout << "Executed " << (i + 1) * halfCyclesPerStep << " half cycles..." << std::endl;
